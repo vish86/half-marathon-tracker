@@ -11,13 +11,13 @@ This repo tracks my training toward a half marathon on **April 11, 2026**, based
 
 **HR compliance (last 14 days):** ❌ Fail
 - easy cap 145: 0/1 pass
-- long cap 155: 0/0 pass
+- long cap 155: 1/1 pass
 - threshold cap 165: 0/0 pass
 - First failure: **easy** avg HR **146** > 145 on **2026-01-28**
 
 | Goal | Status | Evidence |
 |---|---|---|
-| Finish the half marathon | ❌ Not on track | 0.2 runs/week (last 28d); longest long run 0 min. |
+| Finish the half marathon | ❌ Not on track | 0.5 runs/week (last 28d); longest long run 60 min. |
 | Finish under 2:30 | ❌ Not on track | HR cap exceeded: easy avg HR 146 > 145 on 2026-01-28. |
 | Finish under 2:00 | ❌ Not on track | HR cap exceeded: easy avg HR 146 > 145 on 2026-01-28. |
 

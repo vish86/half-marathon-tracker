@@ -7,21 +7,21 @@ This repo tracks my training toward a half marathon on **April 11, 2026**, based
 > Run `python src/update_readme.py` to refresh this section.
 
 <!-- GOAL_STATUS_START -->
-**Weeks to race:** 10.4
+**Weeks to race:** 9.3
 
 **HR compliance (last 14 days):** ❌ Fail
-- easy cap 145: 0/1 pass
+- easy cap 145: 1/2 pass
 - long cap 155: 1/1 pass
 - threshold cap 165: 0/0 pass
 - First failure: **easy** avg HR **146** > 145 on **2026-01-28**
 
 | Goal | Status | Evidence |
 |---|---|---|
-| Finish the half marathon | ❌ Not on track | 0.5 runs/week (last 28d); longest long run 60 min. |
+| Finish the half marathon | ❌ Not on track | 0.8 runs/week (last 28d); longest long run 60 min. |
 | Finish under 2:30 | ❌ Not on track | HR cap exceeded: easy avg HR 146 > 145 on 2026-01-28. |
 | Finish under 2:00 | ❌ Not on track | HR cap exceeded: easy avg HR 146 > 145 on 2026-01-28. |
 
-_Last updated: 2026-01-28_
+_Last updated: 2026-02-05_
 <!-- GOAL_STATUS_END -->
 
 ## Quickstart

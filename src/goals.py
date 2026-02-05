@@ -141,6 +141,72 @@ def time_goal(df: pd.DataFrame, goal_name: str, hr_gate_pass: bool, hr_details: 
     return _status("⚠️ Possible", "HR compliant recently; add pace/efficiency logic next for a stronger call.")
 
 
+def compute_race_pace_level(df: pd.DataFrame) -> Tuple[int, float]:
+    """
+    Compute a 1-5 speedometer level based on recent race pace.
+    
+    Scale:
+    - 1: Won't finish (pace > 15 min/mi)
+    - 2: Finish but slow (13.0-15 min/mi)
+    - 3: Finish under 2:30 (11.6-13 min/mi, ~2:32)
+    - 4: Finish under 2:15 (10.0-11.6 min/mi, ~2:11)
+    - 5: Finish under 2:00 (< 10.0 min/mi, i.e., 9:12 pace)
+    
+    Target 2-hour HM pace: 9:12 min/mi
+    Target 2:30 HM pace: 11:36 min/mi
+    """
+    if df.empty:
+        return 1, 0.0
+    
+    # Use recent easy/threshold runs as pace indicators (exclude long runs which are slower)
+    recent = df[df["run_type"].isin(["easy", "threshold"])].copy()
+    if recent.empty:
+        return 1, 0.0
+    
+    # Average pace from recent runs
+    avg_pace = float(recent["avg_pace_minmi"].mean())
+    
+    if avg_pace < 10.0:  # Under 2:00 pace
+        level = 5
+    elif avg_pace < 11.6:  # 2:00 - 2:15 range
+        level = 4
+    elif avg_pace < 13.0:  # 2:15 - 2:30 range
+        level = 3
+    elif avg_pace <= 15.0:  # 2:30 - finish range
+        level = 2
+    else:  # Won't finish
+        level = 1
+    
+    return level, avg_pace
+
+
+def build_speedometer_graphic(level: int) -> str:
+    """
+    Build an ASCII speedometer graphic showing race pace confidence level (1-5).
+    """
+    # Visual representation of a speedometer
+    gauges = [
+        "🟥🟥🟥🟥🟥 1",  # Level 1: Won't finish
+        "🟩🟥🟥🟥🟥 2",  # Level 2: Finish but slow
+        "🟩🟩🟥🟥🟥 3",  # Level 3: Under 2:30
+        "🟩🟩🟩🟥🟥 4",  # Level 4: Under 2:15
+        "🟩🟩🟩🟩🟩 5",  # Level 5: Under 2:00
+    ]
+    
+    # Clamp level to 1-5
+    level = max(1, min(5, level))
+    
+    labels = [
+        "Won't finish",
+        "Finish slow",
+        "Under 2:30",
+        "Under 2:15",
+        "Under 2:00 🏆",
+    ]
+    
+    return f"{gauges[level - 1]} — {labels[level - 1]}"
+
+
 def build_goal_block(df: pd.DataFrame) -> str:
     """
     Returns the markdown block to inject into README between GOAL_STATUS markers.
@@ -153,10 +219,18 @@ def build_goal_block(df: pd.DataFrame) -> str:
     weeks_to_race = (RACE_DATE - latest_date).days / 7.0
 
     hr_pass, hr_details = compute_hr_compliance(df, today=latest_date)
+    
+    # Calculate race pace level and speedometer
+    pace_level, avg_pace = compute_race_pace_level(df)
+    speedometer = build_speedometer_graphic(pace_level)
 
     # HR compliance summary lines
     hr_label = "✅ Pass" if hr_pass else "❌ Fail"
     lines = []
+    lines.append(f"**Weeks to race:** {weeks_to_race:.1f}\n")
+    lines.append(f"**Race Pace Confidence:** {speedometer}")
+    lines.append(f"(Recent avg pace: {avg_pace:.2f} min/mi)")
+    lines.append("")
     lines.append(f"**HR compliance ({hr_details['window']}):** {hr_label}")
     for rt in ["easy", "long", "threshold"]:
         c = hr_details["counts"].get(rt, {"pass": 0, "fail": 0, "cap": CAP_BY_TYPE[rt]})
@@ -178,5 +252,5 @@ def build_goal_block(df: pd.DataFrame) -> str:
     ]
 
     updated = latest_date.isoformat()
-    header = f"**Weeks to race:** {weeks_to_race:.1f}\n\n" + "\n".join(lines) + "\n\n" + "\n".join(table) + f"\n\n_Last updated: {updated}_"
+    header = "\n".join(lines) + "\n\n" + "\n".join(table) + f"\n\n_Last updated: {updated}_"
     return header

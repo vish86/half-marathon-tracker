@@ -1,0 +1,8 @@
+[project]
+name = "half-marathon-tracker"
+version = "0.1.0"
+description = "README-first half marathon training tracker"
+requires-python = ">=3.10"
+
+[tool.ruff]
+line-length = 100

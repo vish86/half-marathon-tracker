@@ -9,6 +9,9 @@ This repo tracks my training toward a half marathon on **April 11, 2026**, based
 <!-- GOAL_STATUS_START -->
 **Weeks to race:** 9.3
 
+**Race Pace Confidence:** 🟩🟥🟥🟥🟥 2 — Finish slow
+(Recent avg pace: 14.46 min/mi)
+
 **HR compliance (last 14 days):** ❌ Fail
 - easy cap 145: 1/2 pass
 - long cap 155: 1/1 pass

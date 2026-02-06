@@ -157,26 +157,39 @@ def compute_race_pace_level(df: pd.DataFrame) -> Tuple[int, float]:
     """
     if df.empty:
         return 1, 0.0
-    
+
     # Use recent easy/threshold runs as pace indicators (exclude long runs which are slower)
     recent = df[df["run_type"].isin(["easy", "threshold"])].copy()
     if recent.empty:
         return 1, 0.0
-    
+
     # Average pace from recent runs
     avg_pace = float(recent["avg_pace_minmi"].mean())
-    
+
     if avg_pace < 10.0:  # Under 2:00 pace
-        level = 5
+        base_level = 5
     elif avg_pace < 11.6:  # 2:00 - 2:15 range
-        level = 4
+        base_level = 4
     elif avg_pace < 13.0:  # 2:15 - 2:30 range
-        level = 3
+        base_level = 3
     elif avg_pace <= 15.0:  # 2:30 - finish range
-        level = 2
+        base_level = 2
     else:  # Won't finish
-        level = 1
-    
+        base_level = 1
+
+    # Boost rule: if HR compliance gates are passing AND the base pace
+    # already meets the 2:30 mark (base_level >= 3), increase confidence by 1.
+    # This reflects that being HR-compliant makes a 2:30-capable pace more credible.
+    try:
+        latest_date = pd.Timestamp(df["date"].max()).date()
+        hr_pass, _ = compute_hr_compliance(df, today=latest_date)
+    except Exception:
+        hr_pass = False
+
+    level = base_level
+    if hr_pass and base_level >= 3:
+        level = min(5, base_level + 1)
+
     return level, avg_pace
 
 
